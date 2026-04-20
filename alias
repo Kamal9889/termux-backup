@@ -14,16 +14,37 @@ alias upload='cp ~/.bashrc ~/my-scripts/alias && cp -r /sdcard/Backup/* ~/my-scr
 
 
 
-
-
-
-
-
-
 alias yd='python ~/yd_search.py'
 dload() {
     local url="$1"
     local filename="${url##*/}"
     curl -L "$url" -o "/sdcard/Download/$filename"
 }
+
+# স্ক্রিন পরিষ্কার করবে
+clear
+
+# নাম দেখাবে
+figlet -f small "KAMAL PASHA"
+
+echo "--------------------------------------------------------"
+echo " Time: $(date +'%I:%M %p') | Date: $(date +'%d/%m/%Y')"
+echo "--------------------------------------------------------"
+
+# রেমের বিস্তারিত হিসাব এক লাইনে
+free -h | grep Mem | awk '{print " RAM Usage: Total: "$2" | Used: "$3" | Free: "$4}'
+
+echo "--------------------------------------------------------"
+
+# শুধুমাত্র তালিকার ১ নম্বর (Bitcoin) ডাটা বের করা
+# এখানে sed -n '1p' ব্যবহার করা হয়েছে যাতে শুধু প্রথম কয়েনটি আসে
+data=$(python ~/crypto.py | grep -i "Bitcoin" | sed -n '1p')
+
+if [ ! -z "$data" ]; then
+    # অপ্রয়োজনীয় নাম (Bitcoin, BTC) বাদ দিয়ে শুধু সংখ্যাগুলো সাজানো
+    echo "$data" | awk '{print " Current: "$3" | 24h Ago: "$4" | Change: "$5}'
+else
+    echo " Status: Network Offline"
+fi
+echo "--------------------------------------------------------"
 
