@@ -1,7 +1,0 @@
-print("--- ইয়ার্ন কনজাম্পশন ক্যালকুলেটর ---")
-weight = float(input("গার্মেন্টস এর ওজন (গ্রাম): "))
-wastage = float(input("ওয়েস্টেজ (%) : "))
-total = weight + (weight * wastage / 100)
-print(f"মোট ইয়ার্ন প্রয়োজন: {total} গ্রাম")
-
-
