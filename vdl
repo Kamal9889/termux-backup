@@ -1,0 +1,119 @@
+#!/bin/bash
+clear
+echo "======================================================"
+echo "       VIDEO & AUDIO DOWNLOADER (v24 Ultra)           "
+echo "======================================================"
+
+if [ -z "$1" ]; then
+    read -p "Paste Link Here: " url
+else
+    url="$1"
+fi
+
+if [ -z "$url" ]; then echo "No URL!"; exit 1; fi
+
+echo -e "\n[~] Scanning for best formats...\n"
+
+# ডাটা ফেচ
+raw_data=$(yt-dlp --list-formats --no-warnings --no-check-certificate "$url")
+
+# অডিও এবং ভিডিও আলাদা করা
+mapfile -t audio_data < <(echo "$raw_data" | grep "audio only" | awk '{print $1"|"$2}')
+mapfile -t video_data < <(echo "$raw_data" | grep -v "audio only" | grep -E "mp4|webm" | awk '{print $1"|"$2"|"$3}')
+
+# সাইজ ফরম্যাট ফাংশন
+format_size() {
+    local size_str=$1
+    if [[ $size_str =~ ([0-9.]+)(MiB|KiB|GiB|MB|KB|GB) ]]; then
+        local num=${BASH_REMATCH[1]}
+        local unit=${BASH_REMATCH[2]}
+        printf "%0.2f %s" "$num" "$unit"
+    else
+        echo "Unknown   "
+    fi
+}
+
+# --- অডিও টেবিল ---
+echo "┌──────┬──────────┬────────────┬──────────────────┐"
+echo "│ Sl.  │ Type     │ Size       │ Info             │"
+echo "├──────┼──────────┼────────────┼──────────────────┤"
+i=1
+for line in "${audio_data[@]}"; do
+    id=$(echo $line | cut -d'|' -f1)
+    ext=$(echo $line | cut -d'|' -f2)
+    raw_size=$(echo "$raw_data" | grep "^$id " | grep -oE '[0-9.]+(MiB|KiB|GiB|MB|KB|GB)' | head -n1)
+    size=$(format_size "$raw_size")
+    audio_ids[$i]=$id
+    audio_sizes[$i]=$size
+    printf "│ %-4s │ %-8s │ %-10s │ Audio Only       │\n" "$i" "$ext" "$size"
+    echo "├──────┼──────────┼────────────┼──────────────────┤"
+    ((i++))
+done
+
+# --- ভিডিও টেবিল ---
+echo -e "\n┌──────┬─────────────┬──────────┬────────────────┐"
+echo "│ Sl.  │ Resolution  │ Ext.     │ Size           │"
+echo "├──────┼─────────────┼──────────┼────────────────┤"
+for line in "${video_data[@]}"; do
+    id=$(echo $line | cut -d'|' -f1)
+    ext=$(echo $line | cut -d'|' -f2)
+    res=$(echo $line | cut -d'|' -f3)
+    raw_size=$(echo "$raw_data" | grep "^$id " | grep -oE '[0-9.]+(MiB|KiB|GiB|MB|KB|GB)' | head -n1)
+    size=$(format_size "$raw_size")
+    video_ids[$i]=$id
+    video_sizes[$i]=$size
+    video_res[$i]=$res
+    printf "│ %-4s │ %-11s │ %-8s │ %-14s │\n" "$i" "$res" "$ext" "$size"
+    echo "├──────┼─────────────┼──────────┼────────────────┤"
+    ((i++))
+done
+
+echo -e "\n[0] Best Quality Auto"
+echo "------------------------------------------------------"
+
+read -p "Choice Video Serial: " v_serial
+
+if [ "$v_serial" == "0" ]; then
+    final_id="bestvideo+bestaudio/best"
+    name_tag="Best"
+else
+    read -p "Choice Audio Serial: " a_serial
+    
+    vid_id=${video_ids[$v_serial]}
+    aud_id=${audio_ids[$a_serial]}
+    
+    v_res=${video_res[$v_serial]}
+    v_sz=$(echo ${video_sizes[$v_serial]} | awk '{print $1$2}')
+    a_sz=$(echo ${audio_sizes[$a_serial]} | awk '{print $1$2}')
+
+    # কন্ডিশনাল লজিক: ভিডিও এবং অডিও হ্যান্ডলিং
+    if [ -n "$vid_id" ] && [ -n "$aud_id" ]; then
+        # ভিডিও এবং অডিও দুটোই আছে
+        final_id="$vid_id+$aud_id"
+        name_tag="${v_res}_${v_sz}_${a_sz}"
+    elif [ -n "$vid_id" ]; then
+        # শুধু ভিডিও (অডিও নাম্বার ফাঁকা)
+        final_id="$vid_id"
+        name_tag="${v_res}_${v_sz}"
+    elif [ -n "$aud_id" ]; then
+        # শুধু অডিও (ভিডিও নাম্বার ফাঁকা)
+        final_id="$aud_id"
+        name_tag="Audio_${a_sz}"
+    else
+        echo "Error: No valid selection!"
+        exit 1
+    fi
+fi
+
+echo -e "\n[!] Processing Download...\n"
+
+# ডাউনলোড কমান্ড
+yt-dlp -f "$final_id" --no-warnings --no-check-certificate --merge-output-format mp4 "$url" -o "/sdcard/Download/%(title)s [$name_tag].%(ext)s"
+
+if [ $? -eq 0 ]; then
+    echo -e "\n================================================"
+    echo "✅ Download Success!"
+    echo "Saved to: /sdcard/Download/"
+    echo "================================================"
+fi
+
