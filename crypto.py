@@ -2,65 +2,86 @@ import requests
 from datetime import datetime
 
 def get_crypto_data():
-    # Fetching more coins to filter out stablecoins and keep top 20 high-value ones
     url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {
         'vs_currency': 'usd',
-        'order': 'price_desc', # দাম অনুযায়ী বড় থেকে ছোট সাজানো
-        'per_page': 50,
+        'order': 'market_cap_desc',
+        'per_page': 150,
         'page': 1,
         'sparkline': 'false',
         'price_change_percentage': '24h'
     }
 
-    # বাদ দেওয়ার জন্য স্টেবলকয়েন বা কম দামি কয়েনের লিস্ট
-    exclude_list = ['usdc', 'usdt', 'busd', 'dai', 'ust', 'tusd', 'pyusd']
+    exclude_list = [
+        'usdc', 'usdt', 'busd', 'dai', 'ust', 'tusd', 'pyusd', 'fdusd',
+        'usds', 'usdp', 'eusdc', 'usdd', 'frax', 'ldo', 'steth', 'wbtc', 'weth'
+    ]
 
     try:
         response = requests.get(url, params=params)
         data = response.json()
-        
-        # বর্তমান সময় এবং তারিখ ১২ ঘণ্টা ফরম্যাটে (AM/PM)
+
+        # বিটকয়েন (BTC) ডেটা আলাদা করা স্ট্যাটাসের জন্য
+        btc_data = next((item for item in data if item["symbol"] == "btc"), None)
+
         now = datetime.now().strftime('%d-%b-%Y %I:%M:%S %p')
-        
-        print(f"\n--- Crypto Market Report ---")
-        print(f"Date & Time: {now}")
-        # Table Header
-        print(f"{'#':<3} {'Coin':<18} {'Current':<12} {'24h Ago':<12} {'Change'}")
-        print("-" * 62)
+
+        # --- উপরের স্ট্যাটাস সেকশন ---
+        print(f"\n{'='*60}")
+        if btc_data:
+            btc_price = btc_data['current_price']
+            btc_change = btc_data.get('price_change_24h', 0) or 0
+            btc_status = "✅ Strong Buy" if btc_data['price_change_percentage_24h'] > 2 else "⚖️ Neutral"
+            print(f" STATUS: BTC ${btc_price:,.2f} | Change: {btc_change:+,.2f} | {btc_status}")
+        else:
+            print(" STATUS: Network Online | Fetching BTC...")
+        print(f"{'='*60}")
+
+        print(f"   🚀 TOP 100 CRYPTO REPORT (Date: {now})")
+        print(f"{'-'*60}")
+        print(f"{'#':<4} {'Coin':<8} {'Price':<12} {'USD Change':<12} {'Signal'}")
+        print(f"{'-'*60}")
 
         count = 1
         for coin in data:
-            if count > 20: # টপ ২০টি দেখাবে
-                break
-            
+            if count > 100: break
             symbol = coin['symbol'].lower()
-            # স্টেবলকয়েন বাদ দেওয়া এবং অন্তত ১ ডলারের নিচের কয়েনগুলো ফিল্টার করা
-            if symbol in exclude_list or coin['current_price'] < 1.0:
-                continue
+            if symbol in exclude_list: continue
 
-            name = coin['symbol'].upper()
+            name_upper = coin['symbol'].upper()
             current_price = coin['current_price']
-            change_pct = coin['price_change_percentage_24h']
-            
-            # Calculating price 24h ago
-            if change_pct is not None:
-                old_price = current_price / (1 + (change_pct / 100))
-                change_str = f"{'+' if change_pct > 0 else ''}{change_pct:.2f}%"
-                old_price_str = f"${old_price:,.2f}"
-            else:
-                change_str = "N/A"
-                old_price_str = "N/A"
+            usd_change = coin.get('price_change_24h', 0) or 0
+            change_percent = coin.get('price_change_percentage_24h', 0) or 0
 
-            current_price_str = f"${current_price:,.2f}"
-            coin_display = f"{coin['name'][:10]} ({name})"
+            # সিগন্যাল লজিক
+            if change_percent > 7: signal = "🚀 Overbought"
+            elif 2 < change_percent <= 7: signal = "✅ Strong Buy"
+            elif -2 <= change_percent <= 2: signal = "⚖️ Neutral"
+            elif -7 <= change_percent < -2: signal = "🛒 Discount"
+            else: signal = "⚠️ Panic Sell"
 
-            print(f"{count:<3} {coin_display:<18} {current_price_str:<12} {old_price_str:<12} {change_str}")
+            # গোল্ড এবং বিটিসি ফরম্যাটিং
+            coin_display = name_upper
+            if symbol == 'paxg': coin_display = "🏆 PAXG"
+            if symbol == 'btc': coin_display = "⭐ BTC"
+
+            price_str = f"${current_price:,.2f}" if current_price >= 1 else f"${current_price:.4f}"
+            change_str = f"{'+' if usd_change > 0 else ''}${abs(usd_change):,.2f}"
+            if current_price < 1:
+                change_str = f"{'+' if usd_change > 0 else ''}${abs(usd_change):.4f}"
+
+            print(f"{count:<4} {coin_display:<8} {price_str:<12} {change_str:<12} {signal}")
             count += 1
-            
+
     except Exception as e:
-        print("Error: Could not fetch data. Check your connection.")
+        print(f"\n{'='*60}")
+        print(" STATUS: Network Offline (Check Connection)")
+        print(f"{'='*60}\n")
 
 if __name__ == "__main__":
     get_crypto_data()
+
+
+
+
 
