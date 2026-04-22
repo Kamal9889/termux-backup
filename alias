@@ -45,3 +45,4 @@ else
     echo " STATUS: Network Offline"
 fi
 
+alias collar='python ~/collar_weight.py'
