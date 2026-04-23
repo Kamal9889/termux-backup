@@ -1,3 +1,44 @@
+# --- [ Home Page Dashboard ] ---
+clear
+sync
+
+echo -e "\e[1;36m"
+figlet -f small "  Kamal Pasha"
+echo -e "\e[1;35m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
+
+# System Info
+eval $(free -m | awk "NR==2{printf \"r_used=%s; r_free=%s; r_total=%s\", \$3, \$4, \$2}")
+echo -e " \e[1;32m󰍛 RAM:\e[0m      Used: ${r_used}MB | \e[1;32mFree: ${r_free}MB\e[0m | Total: ${r_total}MB"
+
+eval $(df -h /sdcard | awk "NR==2{printf \"s_used=%s; s_free=%s; s_total=%s; s_perc=%s\", \$3, \$4, \$2, \$5}")
+echo -e " \e[1;34m󰋊 SD-Card:\e[0m  Used: ${s_used} | \e[1;34mFree: ${s_free}\e[0m | Total: ${s_total} ($s_perc)"
+
+# Fixed Battery Info (mA Calculation)
+battery=$(termux-battery-status 2>/dev/null)
+if [ $? -eq 0 ]; then
+    perc=$(echo $battery | jq -r '.percentage')
+    stat=$(echo $battery | jq -r '.status')
+    raw_curr=$(echo $battery | jq -r '.current')
+    
+    # মাইক্রো-অ্যাম্পিয়ারকে মিলি-অ্যাম্পিয়ারে রূপান্তর (mA = raw / 1000)
+    curr=$((raw_curr / 1000))
+    
+    if [[ "$stat" == "DISCHARGING" || "$stat" == "NOT_CHARGING" ]]; then
+        # ডিসচার্জিং অবস্থায় মান পজিটিভ করে দেখানো
+        curr_val="${curr#-} mA (Usage)"
+    else
+        curr_val="$curr mA (Charging)"
+    fi
+
+    echo -e " \e[1;31m󰁹 Battery:\e[0m  $perc% - $stat | $curr_val"
+else
+    echo -e " \e[1;31m󰁹 Battery:\e[0m  API Offline"
+fi
+
+echo -e "\e[1;35m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
+echo ""
+
+# --- [ Your Aliases ] ---
 alias con='convert.sh'
 alias pdl='gallery-dl -d /sdcard/Download'
 alias mpvv='termux-open-url'
@@ -8,19 +49,15 @@ alias myip='torsocks curl ifconfig.me'
 alias td='aria2c -d /sdcard/Download --listen-port=6881 --seed-time=0'
 alias file='bash ~/nav.sh'
 alias yarn='python ~/yarn.py'
-alias audio='f(){ mpv --no-video --audio-channels=mono --ytdl-format="bestaudio[abr<=64]/bestaudio" "ytdl://ytsearch30:$*"; }; f'
+alias audio='f(){ mpv --no-video --audio-channels=mono --ytdl-format="bestaudio[abr<=64]/bestaudio" "ytdl://ytsearch30:\$*"; }; f'
 alias coin='python ~/crypto.py'
 alias upload='cp ~/.bashrc ~/my-scripts/alias && cp -r /sdcard/Backup/* ~/my-scripts/ 2>/dev/null && cd ~/my-scripts && git add . && git commit -m "auto backup" && git pull origin main --rebase && git push'
 alias yts='python ~/my-scripts/yts.py'
-
-
-
 alias yd='python ~/yd_search.py'
-dload() {
-    local url="$1"
-    local filename="${url##*/}"
-    curl -L "$url" -o "/sdcard/Download/$filename"
-}
-
-
 alias collar='python ~/collar_weight.py'
+
+dload() {
+    local url="\$1"
+    local filename="\${url##*/}"
+    curl -L "\$url" -o "/sdcard/Download/\$filename"
+}
