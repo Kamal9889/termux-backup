@@ -1,4 +1,5 @@
 import sys
+import os
 
 def gsm_calculator():
     WHITE, GREEN, CYAN, YELLOW, BOLD, END = '\033[97m', '\033[92m', '\033[96m', '\033[93m', '\033[1m', '\033[0m'
@@ -8,20 +9,12 @@ def gsm_calculator():
         W = float(input(f"{WHITE}Enter Width (cm)  : {END}"))
         G = float(input(f"{WHITE}Enter GSM         : {END}"))
         Q = int(input(f"{WHITE}Enter Quantity    : {END}"))
-        
-        # ক্যালকুলেশন
-        single_pc_gm = (L * W * G) / 10000
-        net_kg = (single_pc_gm * Q) / 1000
-        total_with_5_wst = net_kg * 1.05
-
-        # রেজাল্ট ডিসপ্লে
-        print(f"\n{GREEN}{BOLD}--- CONSUMPTION REPORT ---{END}")
+        weight = (L * W * G * Q) / 10000000
+        total = weight * 1.05
         print(f"─" * 40)
-        print(f"{WHITE}Single Pc Weight : {YELLOW}{BOLD}{single_pc_gm:.2f} grams{END}")
-        print(f"{WHITE}Net Total Weight : {GREEN}{net_kg:.3f} kg{END}")
-        print(f"{WHITE}Total (+5% Wst) : {GREEN}{total_with_5_wst:.3f} kg{END}")
-        print(f"─" * 40 + "\n")
-        
+        print(f"{GREEN}Net Weight    : {weight:.3f} kg{END}")
+        print(f"{YELLOW}{BOLD}Total (+5% Wst): {total:.3f} kg{END}")
+        print(f"─" * 40)
     except ValueError: print(f"{BOLD}Invalid Input!{END}")
 
 def time_calculator():
@@ -76,28 +69,53 @@ def rate_chart():
     print(f"\n{CYAN}{BOLD}┌─────────────────────────────────────────────────────┐")
     print(f"│      FLAT KNITTING CHARGE (Rev: 24/07/2025)       │")
     print(f"└─────────────────────────────────────────────────────┘{END}")
-    search = input(f"{WHITE}Search Item or Enter for all: {END}").lower()
-    print(f"\n{BOLD}{'TYPE':<32} {'BUYER':<8} {'INHOUSE':<10}{END}")
+    search = input(f"{WHITE}Search (e.g. Lycra/Jacquard/Neck) or Enter for all: {END}").lower()
+    print(f"\n{BOLD}{'TYPE':<32} {'BUYER':<8} {'OUTSIDE':<10}{END}")
     print(f"─" * 55)
     for row in rates:
         if search in row[0].lower():
             print(f"{YELLOW}{row[0]:<32}{END} {WHITE}{row[1]:<8}{END} {GREEN}{BOLD}{row[2]} Tk/{row[3]}{END}")
     print(f"─" * 55 + "\n")
 
+# নতুন যোগ করা ফাংশন ৫
+def gsm_prediction():
+    WHITE, GREEN, CYAN, YELLOW, BOLD, END = '\033[97m', '\033[92m', '\033[96m', '\033[93m', '\033[1m', '\033[0m'
+    print(f"\n{CYAN}[ 5. GSM PREDICTION (TECHNICAL FORMULA) ]{END}")
+    try:
+        count = float(input(f"{WHITE}Enter Yarn Count (e.g. 24 or 30): {END}"))
+        ply = float(input(f"{WHITE}Enter Ply/Fly (e.g. 4 or 5)     : {END}"))
+        cpi = float(input(f"{WHITE}Enter CPI                        : {END}"))
+        sl = float(input(f"{WHITE}Enter SL (per 100 Needle)        : {END}"))
+        const = float(input(f"{WHITE}Enter Constant (e.g. 2.45)       : {END}"))
+        
+        res_count = count / ply
+        predicted_gsm = (cpi * sl * const) / res_count
+        
+        print(f"─" * 40)
+        print(f"{GREEN}Resultant Count : {res_count:.2f}{END}")
+        print(f"{YELLOW}{BOLD}Predicted GSM   : {predicted_gsm:.2f}{END}")
+        print(f"─" * 40)
+    except ValueError: print(f"{BOLD}Invalid Input!{END}")
+
 def main():
     CYAN, YELLOW, BOLD, END = '\033[96m', '\033[93m', '\033[1m', '\033[0m'
+    os.system('clear')
     print(f"\n{CYAN}{BOLD}┌───────────────────────────────────────────┐")
     print(f"│      GARMENTS PRODUCTION TOOLKIT V8       │")
     print(f"└───────────────────────────────────────────┘{END}")
     print(f"{YELLOW}1. Collar Yarn Consumption (GSM Based)")
     print(f"2. Knit Time Calculator")
     print(f"3. Knitting Price Calculator")
-    print(f"4. Flat Knitting Charge (New Rate List){END}")
-    choice = input(f"\n{BOLD}Select Option (1-4): {END}")
+    print(f"4. Flat Knitting Charge (New Rate List)")
+    print(f"5. GSM Prediction (CPI/SL/Count Based){END}")
+
+    choice = input(f"\n{BOLD}Select Option (1-5): {END}")
+
     if choice == '1': gsm_calculator()
     elif choice == '2': time_calculator()
     elif choice == '3': knitting_price()
     elif choice == '4': rate_chart()
+    elif choice == '5': gsm_prediction()
     else: print("Invalid Selection!")
 
 if __name__ == "__main__":
