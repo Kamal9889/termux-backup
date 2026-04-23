@@ -11,6 +11,7 @@ alias yarn='python ~/yarn.py'
 alias audio='f(){ mpv --no-video --audio-channels=mono --ytdl-format="bestaudio[abr<=64]/bestaudio" "ytdl://ytsearch30:$*"; }; f'
 alias coin='python ~/crypto.py'
 alias upload='cp ~/.bashrc ~/my-scripts/alias && cp -r /sdcard/Backup/* ~/my-scripts/ 2>/dev/null && cd ~/my-scripts && git add . && git commit -m "auto backup" && git pull origin main --rebase && git push'
+alias yts='python ~/my-scripts/yts.py'
 
 
 

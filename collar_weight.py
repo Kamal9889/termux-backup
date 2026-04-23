@@ -8,12 +8,20 @@ def gsm_calculator():
         W = float(input(f"{WHITE}Enter Width (cm)  : {END}"))
         G = float(input(f"{WHITE}Enter GSM         : {END}"))
         Q = int(input(f"{WHITE}Enter Quantity    : {END}"))
-        weight = (L * W * G * Q) / 10000000
-        total = weight * 1.05
+        
+        # ক্যালকুলেশন
+        single_pc_gm = (L * W * G) / 10000
+        net_kg = (single_pc_gm * Q) / 1000
+        total_with_5_wst = net_kg * 1.05
+
+        # রেজাল্ট ডিসপ্লে
+        print(f"\n{GREEN}{BOLD}--- CONSUMPTION REPORT ---{END}")
         print(f"─" * 40)
-        print(f"{GREEN}Net Weight    : {weight:.3f} kg{END}")
-        print(f"{YELLOW}{BOLD}Total (+5% Wst): {total:.3f} kg{END}")
-        print(f"─" * 40)
+        print(f"{WHITE}Single Pc Weight : {YELLOW}{BOLD}{single_pc_gm:.2f} grams{END}")
+        print(f"{WHITE}Net Total Weight : {GREEN}{net_kg:.3f} kg{END}")
+        print(f"{WHITE}Total (+5% Wst) : {GREEN}{total_with_5_wst:.3f} kg{END}")
+        print(f"─" * 40 + "\n")
+        
     except ValueError: print(f"{BOLD}Invalid Input!{END}")
 
 def time_calculator():
@@ -46,8 +54,6 @@ def knitting_price():
 
 def rate_chart():
     CYAN, YELLOW, BOLD, GREEN, WHITE, END = '\033[96m', '\033[93m', '\033[1m', '\033[92m', '\033[97m', '\033[0m'
-    
-    # Updated Rate List based on your latest data (Date: 24/07/2025)
     rates = [
         ["Solid Collar Cuff", "6", "4", "Set"], ["Tipping Collar Cuff", "8", "6", "Set"],
         ["Solid Lycra Collar Cuff", "10", "8", "Set"], ["Tipping Lycra Collar Cuff", "12", "10", "Set"],
@@ -67,34 +73,27 @@ def rate_chart():
         ["Jacquard Solid Lycra Placket", "35", "20", "Pcs"], ["Jacquard Tipping Placket", "38", "25", "Pcs"],
         ["Jacquard Tipping Lycra Placket", "40", "25", "Pcs"]
     ]
-
     print(f"\n{CYAN}{BOLD}┌─────────────────────────────────────────────────────┐")
     print(f"│      FLAT KNITTING CHARGE (Rev: 24/07/2025)       │")
     print(f"└─────────────────────────────────────────────────────┘{END}")
-    
-    search = input(f"{WHITE}Search (e.g. Lycra/Jacquard/Neck) or Enter for all: {END}").lower()
-    
+    search = input(f"{WHITE}Search Item or Enter for all: {END}").lower()
     print(f"\n{BOLD}{'TYPE':<32} {'BUYER':<8} {'INHOUSE':<10}{END}")
     print(f"─" * 55)
-    
     for row in rates:
         if search in row[0].lower():
             print(f"{YELLOW}{row[0]:<32}{END} {WHITE}{row[1]:<8}{END} {GREEN}{BOLD}{row[2]} Tk/{row[3]}{END}")
-    
     print(f"─" * 55 + "\n")
 
 def main():
     CYAN, YELLOW, BOLD, END = '\033[96m', '\033[93m', '\033[1m', '\033[0m'
     print(f"\n{CYAN}{BOLD}┌───────────────────────────────────────────┐")
-    print(f"│      GARMENTS PRODUCTION TOOLKIT V7       │")
+    print(f"│      GARMENTS PRODUCTION TOOLKIT V8       │")
     print(f"└───────────────────────────────────────────┘{END}")
     print(f"{YELLOW}1. Collar Yarn Consumption (GSM Based)")
     print(f"2. Knit Time Calculator")
     print(f"3. Knitting Price Calculator")
     print(f"4. Flat Knitting Charge (New Rate List){END}")
-    
     choice = input(f"\n{BOLD}Select Option (1-4): {END}")
-    
     if choice == '1': gsm_calculator()
     elif choice == '2': time_calculator()
     elif choice == '3': knitting_price()
