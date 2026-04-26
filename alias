@@ -56,9 +56,14 @@ alias upload='cp ~/.bashrc ~/my-scripts/alias && cp -r /sdcard/Backup/* ~/my-scr
 alias yts='python ~/my-scripts/yts.py'
 alias yd='python ~/yd_search.py'
 alias collar='python ~/collar_weight.py'
+alias list='bash ~/dashboard.sh'
+
+
 
 dload() {
     local url="\$1"
     local filename="\${url##*/}"
     curl -L "\$url" -o "/sdcard/Download/\$filename"
 }
+
+alias tgdl='python ~/tg_down.py'
