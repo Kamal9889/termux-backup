@@ -40,23 +40,24 @@ echo ""
 
 # --- [ Your Aliases ] ---
 alias pro='python ~/pro.py'
-alias con='convert.sh'
+alias collar='python ~/collar_weight.py'
+alias yarn='python ~/yarn.py'
+alias yd='python ~/yd_search.py'
+alias yts='python ~/my-scripts/yts.py'
 alias pdl='gallery-dl -d /sdcard/Download'
+alias coin='python ~/crypto.py'
+alias file='bash ~/nav.sh'
+
+alias con='convert.sh'
 alias mpvv='termux-open-url'
 alias aedit='nano ~/.bashrc'
 alias aset='source ~/.bashrc'
 alias vpn='torsocks'
 alias myip='curl -s ifconfig.me && echo "" && torsocks curl -s ifconfig.me 2>/dev/null || echo "Tor not connected"'
-
 alias td='aria2c -d /sdcard/Download --listen-port=6881 --seed-time=0'
-alias file='bash ~/nav.sh'
-alias yarn='python ~/yarn.py'
+
 alias audio='f(){ mpv --no-video --audio-channels=mono --ytdl-format="bestaudio[abr<=64]/bestaudio" "ytdl://ytsearch30:\$*"; }; f'
-alias coin='python ~/crypto.py'
 alias upload='cp ~/.bashrc ~/my-scripts/alias && cp -r /sdcard/Backup/* ~/my-scripts/ 2>/dev/null && cd ~/my-scripts && git add . && git commit -m "auto backup" && git pull origin main --rebase && git push'
-alias yts='python ~/my-scripts/yts.py'
-alias yd='python ~/yd_search.py'
-alias collar='python ~/collar_weight.py'
 alias list='bash ~/dashboard.sh'
 alias lab='cd ~/test_lab && ./start_lab.sh'
 
