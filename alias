@@ -3,7 +3,7 @@ clear
 sync
 
 echo -e "\e[1;36m"
-figlet -f small "  Kamal Pasha"
+figlet -f small "  K@M@L  P@SH@"
 echo -e "\e[1;35m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
 
 # System Info
@@ -39,6 +39,7 @@ echo -e "\e[1;35m━━━━━━━━━━━━━━━━━━━━━
 echo ""
 
 # --- [ Your Aliases ] ---
+alias pro='python ~/pro.py'
 alias con='convert.sh'
 alias pdl='gallery-dl -d /sdcard/Download'
 alias mpvv='termux-open-url'
@@ -57,6 +58,9 @@ alias yts='python ~/my-scripts/yts.py'
 alias yd='python ~/yd_search.py'
 alias collar='python ~/collar_weight.py'
 alias list='bash ~/dashboard.sh'
+alias lab='cd ~/test_lab && ./start_lab.sh'
+
+
 
 
 
@@ -67,3 +71,5 @@ dload() {
 }
 
 alias tgdl='python ~/tg_down.py'
+alias day="printf '\e]11;#FFFFFF\e\' && printf '\e]10;#000000\e\'"
+alias night="printf '\e]11;#000000\e\' && printf '\e]10;#FFFFFF\e\'"
