@@ -75,3 +75,4 @@ alias tgdl='python ~/tg_down.py'
 alias day="printf '\e]11;#FFFFFF\e\' && printf '\e]10;#000000\e\'"
 alias night="printf '\e]11;#000000\e\' && printf '\e]10;#FFFFFF\e\'"
 alias allclear='pkg clean && apt autoremove -y && find . -type d -name "__pycache__" -exec rm -rf {} + && rm -rf $PREFIX/tmp/* && echo Clean_Done'
+alias ald='cd /sdcard/Download && yt-dlp --downloader aria2c --downloader-args "aria2c:-x 16 -s 16"'
