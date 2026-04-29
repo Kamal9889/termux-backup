@@ -3,7 +3,7 @@ clear
 sync
 
 echo -e "\e[1;36m"
-figlet -f small "  K@M@L  P@SH@"
+figlet -f small -w $(tput cols) "  K@M@L  P@SH@"
 echo -e "\e[1;35m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
 
 # System Info
@@ -74,3 +74,4 @@ dload() {
 alias tgdl='python ~/tg_down.py'
 alias day="printf '\e]11;#FFFFFF\e\' && printf '\e]10;#000000\e\'"
 alias night="printf '\e]11;#000000\e\' && printf '\e]10;#FFFFFF\e\'"
+alias allclear='pkg clean && apt autoremove -y && find . -type d -name "__pycache__" -exec rm -rf {} + && rm -rf $PREFIX/tmp/* && echo Clean_Done'
